@@ -342,18 +342,20 @@ function show() {
     text("Version 0.4", (scrWidth - 50), 25.0);
 }
 
-function mousePressed() {
-    if (!MENU) {
-        matterArr = thegame.cell;
-        game = thegame;
-        let i = game.cell_amount;
-        game.cell_amount = i + 1;
-        matterArr.push(thegame.cell[0].accelerate(this.mouseX, this.mouseY));
+function mousePressed(event) {
+    if (event.type === 'mousedown') {
+        if (!MENU) {
+            matterArr = thegame.cell;
+            game = thegame;
+            let i = game.cell_amount;
+            game.cell_amount = i + 1;
+            matterArr.push(thegame.cell[0].accelerate(this.mouseX, this.mouseY));
+        }
+        if (!thegame.cell[0].alive) {
+            thegame = new Game(this, scrWidth, scrHeight, 0, dif);
+        }
+        menucheck();
     }
-    if (!thegame.cell[0].alive) {
-        thegame = new Game(this, scrWidth, scrHeight, 0, dif);
-    }
-    menucheck();
 }
 
 function menucheck() {
