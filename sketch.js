@@ -7,22 +7,22 @@ class Matter {
           let m = sy / sx;
           let temp = Math.sqrt((1.0 + (m * m)));
           if (sy > 0.0) {
-              this.f96y = (((r_object + r) * Math.abs(m)) / temp) + y_object;
+              this.positionY = (((r_object + r) * Math.abs(m)) / temp) + y_object;
           } else {
-              this.f96y = y_object - (((r_object + r) * Math.abs(m)) / temp);
+              this.positionY = y_object - (((r_object + r) * Math.abs(m)) / temp);
           }
           if (sx > 0.0) {
-              this.f95x = ((r_object + r) / temp) + x_object;
+              this.positionX = ((r_object + r) / temp) + x_object;
           } else {
-              this.f95x = x_object - ((r_object + r) / temp);
+              this.positionX = x_object - ((r_object + r) / temp);
           }
           this.radious = r;
           this.xspeed = (((sx) * Math.sqrt((ONE_OUT_OFF - 1))) + (x_object_s));
           this.yspeed = (((sy) * Math.sqrt((ONE_OUT_OFF - 1))) + (y_object_s));
           this.alive = true;
         } else {
-          this.f95x = x_object;
-          this.f96y = y_object;
+          this.positionX = x_object;
+          this.positionY = y_object;
           this.radious = r_object; // map overlaoding
           this.xspeed = r; // map overlaoding
           this.yspeed = sx; // map overlaoding
@@ -30,23 +30,12 @@ class Matter {
         }
     }
 
-    /*
-    constructor(x_object, y_object, r, sx, sy) {
-        this.f95x = x_object;
-        this.f96y = y_object;
-        this.radious = r;
-        this.xspeed = sx;
-        this.yspeed = sy;
-        this.alive = true;
-    }
-    */
-
     display(app, drawVector) {
         app.stroke(0, 0.0);
-        app.ellipse(this.f95x, this.f96y, this.radious * 2.0, this.radious * 2.0);
+        app.ellipse(this.positionX, this.positionY, this.radious * 2.0, this.radious * 2.0);
         if (drawVector) {
             app.fill(255.0, 50.0, 255.0);
-            this.drawArrow(app, this.f95x, this.f96y, this.f95x + (((this.xspeed * this.radious) * this.radious) / 100.0), this.f96y + (((this.yspeed * this.radious) * this.radious) / 100.0));
+            this.drawArrow(app, this.positionX, this.positionY, this.positionX + (((this.xspeed * this.radious) * this.radious) / 100.0), this.positionY + (((this.yspeed * this.radious) * this.radious) / 100.0));
         }
     }
 
@@ -62,47 +51,47 @@ class Matter {
     }
 
     move() {
-        this.f95x += this.xspeed / 10.0;
-        this.f96y += this.yspeed / 10.0;
+        this.positionX += this.xspeed / 10.0;
+        this.positionY += this.yspeed / 10.0;
     }
 
     wall(screenWidth, screenHeight) {
-        if (this.radious > this.f95x) {
+        if (this.radious > this.positionX) {
             this.xspeed *= -1.0;
-            this.f95x = this.radious;
+            this.positionX = this.radious;
         }
-        if (this.f95x > (screenWidth) - this.radious) {
+        if (this.positionX > (screenWidth) - this.radious) {
             this.xspeed *= -1.0;
-            this.f95x = (screenWidth) - this.radious;
+            this.positionX = (screenWidth) - this.radious;
         }
-        if (this.radious > this.f96y) {
+        if (this.radious > this.positionY) {
             this.yspeed *= -1.0;
-            this.f96y = this.radious;
+            this.positionY = this.radious;
         }
-        if (this.f96y > (screenHeight) - this.radious) {
+        if (this.positionY > (screenHeight) - this.radious) {
             this.yspeed *= -1.0;
-            this.f96y = (screenHeight) - this.radious;
+            this.positionY = (screenHeight) - this.radious;
         }
     }
 
     distance(a) {
-        return Math.sqrt((((this.f95x - a.f95x) * (this.f95x - a.f95x)) + ((this.f96y - a.f96y) * (this.f96y - a.f96y))));
+        return Math.sqrt((((this.positionX - a.positionX) * (this.positionX - a.positionX)) + ((this.positionY - a.positionY) * (this.positionY - a.positionY))));
     }
 
-    accelerate(xx, yy) {
-        let dx = (xx) - this.f95x;
-        let dy = (yy) - this.f96y;
+    accelerateFrom(xx, yy) {
+        let dx = (xx) - this.positionX;
+        let dy = (yy) - this.positionY;
         let dt = Math.sqrt(((dx * dx) + (dy * dy)));
         this.xspeed -= dx / dt;
         this.yspeed -= dy / dt;
         let temp = this.radious;
         this.radious = (((this.radious) * Math.sqrt((ONE_OUT_OFF - 1))) / Math.sqrt(ONE_OUT_OFF));
-        return new Matter(this.f95x, this.f96y, this.radious, (((temp) * Math.sqrt(1.0)) / Math.sqrt(ONE_OUT_OFF)), dx / dt, dy / dt, this.xspeed, this.yspeed);
+        return new Matter(this.positionX, this.positionY, this.radious, (((temp) * Math.sqrt(1.0)) / Math.sqrt(ONE_OUT_OFF)), dx / dt, dy / dt, this.xspeed, this.yspeed);
     }
 
     push_to(xx, yy, s) {
-        let dx = xx - this.f95x;
-        let dy = yy - this.f96y;
+        let dx = xx - this.positionX;
+        let dy = yy - this.positionY;
         let dt = Math.sqrt(((dx * dx) + (dy * dy)));
         this.xspeed += ((dx / dt) * s) / 40.0;
         this.yspeed += ((dy / dt) * s) / 40.0;
@@ -139,7 +128,7 @@ class Game {
                 this.ran_x = app.random(max_r, (this.mScreenWidth - max_r));
                 this.ran_y = app.random(max_r, (this.mScreenHeight - max_r));
                 for (let j = 0; j < this.cell_amount; j++) {
-                    if ((Math.sqrt(((this.ran_x - this.cell[j].f95x) * (this.ran_x - this.cell[j].f95x)) + ((this.ran_y - this.cell[j].f96y) * (this.ran_y - this.cell[j].f96y))) - this.ran_r) - this.cell[j].radious < 5.0) {
+                    if ((Math.sqrt(((this.ran_x - this.cell[j].positionX) * (this.ran_x - this.cell[j].positionX)) + ((this.ran_y - this.cell[j].positionY) * (this.ran_y - this.cell[j].positionY))) - this.ran_r) - this.cell[j].radious < 5.0) {
                         this.flag = true;
                     }
                 }
@@ -155,8 +144,8 @@ class Game {
         if (GRAVITY != 0 && (!MENU || !nowYouCanDrawMenu)) {
             for (let i = 0; i < this.cell_amount; i++) {
                 for (let j = i + 1; j < this.cell_amount; j++) {
-                    this.cell[j].push_to(this.cell[i].f95x, this.cell[i].f96y, ((gravity_force) * (this.cell[i].radious * this.cell[i].radious)) / (this.cell[i].distance(this.cell[j]) * this.cell[i].distance(this.cell[j])));
-                    this.cell[i].push_to(this.cell[j].f95x, this.cell[j].f96y, ((gravity_force) * (this.cell[j].radious * this.cell[j].radious)) / (this.cell[i].distance(this.cell[j]) * this.cell[i].distance(this.cell[j])));
+                    this.cell[j].push_to(this.cell[i].positionX, this.cell[i].positionY, ((gravity_force) * (this.cell[i].radious * this.cell[i].radious)) / (this.cell[i].distance(this.cell[j]) * this.cell[i].distance(this.cell[j])));
+                    this.cell[i].push_to(this.cell[j].positionX, this.cell[j].positionY, ((gravity_force) * (this.cell[j].radious * this.cell[j].radious)) / (this.cell[i].distance(this.cell[j]) * this.cell[i].distance(this.cell[j])));
                 }
             }
         }
@@ -349,7 +338,7 @@ function mousePressed(event) {
             game = thegame;
             let i = game.cell_amount;
             game.cell_amount = i + 1;
-            matterArr.push(thegame.cell[0].accelerate(this.mouseX, this.mouseY));
+            matterArr.push(thegame.cell[0].accelerateFrom(this.mouseX, this.mouseY));
         }
         if (!thegame.cell[0].alive) {
             thegame = new Game(this, scrWidth, scrHeight, 0, dif);
