@@ -241,11 +241,6 @@ class Game {
           if (overlap > 1.0) {
             overlap = 1.0;
           }
-          /*
-          if (app.millis() - app.time > app.random(200.0, 450.0)) {
-            app.time = app.millis();
-          }
-          */
           if (overlap == 1.0) {
             small.alive = false;
           }
@@ -277,11 +272,6 @@ let nowYouCanDrawMenu;
 let scrHeight = 0;
 let scrWidth = 0;
 let thegame;
-let time = millis();
-
-function millis() {
-  return Date.now();
-}
 
 function setup() {
   scrHeight = windowHeight;
@@ -291,6 +281,8 @@ function setup() {
   thegame = new Game(this, scrWidth, scrHeight, 0, dif);
   textAlign(3);
   rectMode(3);
+
+  frameRate(1000)
 }
 
 function draw() {
