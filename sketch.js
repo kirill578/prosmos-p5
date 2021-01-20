@@ -149,6 +149,7 @@ class Game {
         this.ran_x = app.random(max_r, this.mScreenWidth - max_r);
         this.ran_y = app.random(max_r, this.mScreenHeight - max_r);
         for (let j = 0; j < this.cell.length; j++) {
+          const cellB = this.cell[j];
           if (
             Math.sqrt(
               (this.ran_x - cellB.positionX) * (this.ran_x - cellB.positionX) +
@@ -180,6 +181,8 @@ class Game {
     if (GRAVITY != 0 && (!MENU || !nowYouCanDrawMenu)) {
       for (let i = 0; i < this.cell.length; i++) {
         for (let j = i + 1; j < this.cell.length; j++) {
+          const cellA = this.cell[i];
+          const cellB = this.cell[j];
           cellB.push_to(
             cellA.positionX,
             cellA.positionY,
@@ -238,9 +241,11 @@ class Game {
           if (overlap > 1.0) {
             overlap = 1.0;
           }
+          /*
           if (app.millis() - app.time > app.random(200.0, 450.0)) {
             app.time = app.millis();
           }
+          */
           if (overlap == 1.0) {
             small.alive = false;
           }
