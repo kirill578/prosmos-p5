@@ -306,7 +306,7 @@ let GRAVITY = 0;
 let MENU = false;
 let VECTOR = false;
 let change_flag = false;
-let dif = 10;
+let dif = 3;
 let gravity_force = 1;
 let nowYouCanDrawMenu;
 let scrHeight = 0;
