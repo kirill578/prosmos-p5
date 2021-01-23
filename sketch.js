@@ -231,8 +231,12 @@ class Game {
       }
     }
 
-    const closest = distanceTuple.sort(([a], [b]) => a - b).splice(0, 10).map(([d,c]) => c)
-    closest.forEach(from => {
+    // my.size / biggest, // normalized my size
+
+    const biggest = scrHeight > scrWidth ? scrHeight : scrWidth;
+    const closest = distanceTuple.sort(([a], [b]) => a - b).splice(0, 1)
+    const inputs = closest.map(([distance, from]) => {
+      
       this.mApp.stroke(28.0, 30.0, 42.0);
       this.mApp.line(
         from.positionX,
@@ -240,7 +244,23 @@ class Game {
         me.positionX,
         me.positionY
       );
+
+      const normalizedRadius = from.radius / me.radius;
+      const normalizedDistance = Math.max((distance - me.radius - from.radius) / from.radius, 0);
+
+      const deltaVx = me.xspeed - from.xspeed;
+      const deltaVy = me.yspeed - from.yspeed;
+      const normalizedRelativeSpeedAngle = Math.atan2(deltaVy, deltaVx) / Math.PI;
+      const normalizedRelativeSpeed = Math.sqrt(deltaVy * deltaVy + deltaVx * deltaVx);
+      return {
+        normalizedRadius,
+        normalizedDistance,
+        normalizedRelativeSpeedAngle,
+        normalizedRelativeSpeed
+      }
     })
+
+    console.log(JSON.stringify(inputs, null, 3))
   }
 
   calculate_collisions() {
