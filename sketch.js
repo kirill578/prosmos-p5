@@ -177,7 +177,7 @@ class Game {
 
   begin() {
     background(220);
-    this.calculate_collisions(this.mApp);
+    this.calculate_collisions();
     if (GRAVITY != 0 && (!MENU || !nowYouCanDrawMenu)) {
       for (let i = 0; i < this.cell.length; i++) {
         for (let j = i + 1; j < this.cell.length; j++) {
@@ -221,9 +221,29 @@ class Game {
         this.cell[i2].display(this.mApp, VECTOR);
       }
     }
+
+    const distanceTuple = [];
+    const me = this.cell[0];
+    for (let i = 1; i < this.cell.length; i++) {
+      if (this.cell[i].alive) {
+        const distance = me.distance(this.cell[i]);
+        distanceTuple.push([distance, this.cell[i]]);
+      }
+    }
+
+    const closest = distanceTuple.sort(([a], [b]) => a - b).splice(0, 10).map(([d,c]) => c)
+    closest.forEach(from => {
+      this.mApp.stroke(28.0, 30.0, 42.0);
+      this.mApp.line(
+        from.positionX,
+        from.positionY,
+        me.positionX,
+        me.positionY
+      );
+    })
   }
 
-  calculate_collisions(app) {
+  calculate_collisions() {
     for (let i = 0; i < this.cell.length; i++) {
       for (let j = i + 1; j < this.cell.length; j++) {
         const cellA = this.cell[i];
@@ -263,10 +283,10 @@ class Game {
 }
 
 let GRAVITY = 0;
-let MENU = true;
+let MENU = false;
 let VECTOR = false;
 let change_flag = false;
-let dif = 1;
+let dif = 10;
 let gravity_force = 1;
 let nowYouCanDrawMenu;
 let scrHeight = 0;
