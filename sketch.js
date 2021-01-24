@@ -231,10 +231,7 @@ class Game {
       }
     }
 
-    // my.size / biggest, // normalized my size
-
-    const biggest = scrHeight > scrWidth ? scrHeight : scrWidth;
-    const closest = distanceTuple.sort(([a], [b]) => a - b).splice(0, 1)
+    const closest = distanceTuple.sort(([a], [b]) => a - b).splice(0, 10)
     const inputs = closest.map(([distance, from]) => {
       
       this.mApp.stroke(28.0, 30.0, 42.0);
@@ -246,21 +243,60 @@ class Game {
       );
 
       const normalizedRadius = from.radius / me.radius;
-      const normalizedDistance = Math.max((distance - me.radius - from.radius) / from.radius, 0);
+      const normalizedDistance = Math.max((distance - me.radius - from.radius) / me.radius, 0);
+      const normalizedDistanceAngle = Math.atan2(me.positionX - from.positionX, me.positionY - from.positionY) / Math.PI;
 
       const deltaVx = me.xspeed - from.xspeed;
       const deltaVy = me.yspeed - from.yspeed;
-      const normalizedRelativeSpeedAngle = Math.atan2(deltaVy, deltaVx) / Math.PI;
+      const normalizedRelativeSpeedAngle = Math.atan2(deltaVx, deltaVy) / Math.PI;
       const normalizedRelativeSpeed = Math.sqrt(deltaVy * deltaVy + deltaVx * deltaVx);
       return {
         normalizedRadius,
         normalizedDistance,
+        normalizedDistanceAngle,
         normalizedRelativeSpeedAngle,
         normalizedRelativeSpeed
       }
     })
 
-    console.log(JSON.stringify(inputs, null, 3))
+    // print virtual scene
+    this.mApp.stroke(0, 0.0);
+    this.mApp.fill(255, 255, 255);
+    this.mApp.rect(0,0, 250, 250);
+
+    const baseSize = 25;
+    const baseX = 125;
+    const baseY = 125;
+    this.mApp.fill(0, 0, 0);
+    this.mApp.ellipse(
+      baseX,
+      baseY,
+      baseSize, 
+      baseSize
+    );
+
+    inputs.forEach(obj => {
+      const {
+        normalizedRadius,
+        normalizedDistance,
+        normalizedDistanceAngle,
+        normalizedRelativeSpeedAngle,
+        normalizedRelativeSpeed
+      } = obj;
+      const size = baseSize * normalizedRadius;
+      const fullDistance = baseSize/2 + size/2 + (normalizedDistance * baseSize)
+      const distanceX = Math.sin(normalizedDistanceAngle * Math.PI) * fullDistance;
+      const distanceY = Math.cos(normalizedDistanceAngle * Math.PI) * fullDistance;
+      
+      this.mApp.fill(0, 0, 0);
+      this.mApp.ellipse(
+        baseX - distanceX,
+        baseY - distanceY,
+        size,
+        size
+      );
+
+    });
   }
 
   calculate_collisions() {
